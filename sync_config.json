@@ -1,0 +1,38 @@
+{
+  "NASHIK": {
+    "intervalMinutes": 2,
+    "enabled": true,
+    "lastSync": "2026-08-26T05:18:47.172Z",
+    "nextSync": "2026-08-26T05:20:47.172Z"
+  },
+  "MUMBAI": {
+    "intervalMinutes": 15,
+    "enabled": true,
+    "lastSync": "2026-08-26T05:18:16.482Z",
+    "nextSync": "2026-08-26T05:33:16.482Z"
+  },
+  "PUNE": {
+    "intervalMinutes": 15,
+    "enabled": true,
+    "lastSync": "2026-08-26T05:18:19.470Z",
+    "nextSync": "2026-08-26T05:33:19.470Z"
+  },
+  "NAGPUR": {
+    "intervalMinutes": 30,
+    "enabled": true,
+    "lastSync": "2026-08-26T05:17:16.424Z",
+    "nextSync": "2026-08-26T05:47:16.424Z"
+  },
+  "THANE": {
+    "intervalMinutes": 30,
+    "enabled": true,
+    "lastSync": "2026-08-26T05:17:19.122Z",
+    "nextSync": "2026-08-26T05:47:19.122Z"
+  },
+  "AURANGABAD": {
+    "intervalMinutes": 60,
+    "enabled": true,
+    "lastSync": "2026-08-26T05:17:22.268Z",
+    "nextSync": "2026-08-26T06:17:22.268Z"
+  }
+}

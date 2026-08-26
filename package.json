@@ -1,0 +1,15 @@
+{
+  "name": "gem-bids-portal",
+  "version": "1.0.0",
+  "description": "Government e-Marketplace (GeM) Live Bid Fetcher & Analytics Portal",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "express": "^4.22.2"
+  }
+}
