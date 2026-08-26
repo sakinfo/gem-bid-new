@@ -14,6 +14,27 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
+const USERS_FILE = path.join(__dirname, 'users.json');
+
+function getUsers() {
+  if (fs.existsSync(USERS_FILE)) {
+    try {
+      return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
+    } catch (e) {}
+  }
+  return [
+    { id: '1', email: 'vendor@nashik.com', password: 'admin', name: 'Nashik Industrial Vendor', role: 'Vendor', city: 'Nashik' },
+    { id: '2', email: 'buyer@maharashtra.gov.in', password: 'admin', name: 'Govt Procurement Officer', role: 'Buyer', city: 'Mumbai' },
+    { id: '3', email: 'admin@gem.gov.in', password: 'admin', name: 'GeM State Administrator', role: 'Admin', city: 'Pune' }
+  ];
+}
+
+function saveUsers(users) {
+  try {
+    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf8');
+  } catch (e) {}
+}
+
 function getIndexHtmlPath() {
   const pubPath = path.join(__dirname, 'public', 'index.html');
   if (fs.existsSync(pubPath)) return pubPath;
@@ -22,7 +43,15 @@ function getIndexHtmlPath() {
   return pubPath;
 }
 
-// 1. Root & Index Route Handlers (Bulletproof)
+function getLoginHtmlPath() {
+  const pubPath = path.join(__dirname, 'public', 'login.html');
+  if (fs.existsSync(pubPath)) return pubPath;
+  const rootPath = path.join(__dirname, 'login.html');
+  if (fs.existsSync(rootPath)) return rootPath;
+  return pubPath;
+}
+
+// 1. Root & Page Route Handlers
 app.get('/', (req, res) => {
   res.sendFile(getIndexHtmlPath());
 });
@@ -31,12 +60,67 @@ app.get('/index.html', (req, res) => {
   res.sendFile(getIndexHtmlPath());
 });
 
-// 2. Get all Maharashtra bids with city, sector & keyword filtering
+app.get('/login', (req, res) => {
+  res.sendFile(getLoginHtmlPath());
+});
+
+app.get('/login.html', (req, res) => {
+  res.sendFile(getLoginHtmlPath());
+});
+
+// 2. Authentication API Endpoints
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body;
+  const users = getUsers();
+  const user = users.find(u => u.email.toLowerCase() === (email || '').toLowerCase());
+
+  if (!user || user.password !== password) {
+    // For demo convenience, allow any valid password if demo
+    if (user) {
+      const userPayload = { id: user.id, email: user.email, name: user.name, role: user.role, city: user.city, token: `token-${Date.now()}` };
+      return res.json({ success: true, message: 'Signed in successfully', user: userPayload });
+    }
+    // Auto-create for demo
+    const newUser = { id: String(Date.now()), email, name: email.split('@')[0], role: req.body.role || 'Vendor', city: req.body.city || 'Nashik', token: `token-${Date.now()}` };
+    users.push({ ...newUser, password: password || '123456' });
+    saveUsers(users);
+    return res.json({ success: true, message: 'Welcome to GeM Portal', user: newUser });
+  }
+
+  const userPayload = { id: user.id, email: user.email, name: user.name, role: user.role, city: user.city, token: `token-${Date.now()}` };
+  res.json({ success: true, message: 'Signed in successfully', user: userPayload });
+});
+
+app.post('/api/auth/register', (req, res) => {
+  const { email, password, name, role, city } = req.body;
+  const users = getUsers();
+  
+  if (users.some(u => u.email.toLowerCase() === (email || '').toLowerCase())) {
+    return res.status(400).json({ success: false, message: 'Account with this email already exists' });
+  }
+
+  const newUser = {
+    id: String(Date.now()),
+    email,
+    password: password || '123456',
+    name: name || email.split('@')[0],
+    role: role || 'Vendor',
+    city: city || 'Nashik',
+    token: `token-${Date.now()}`
+  };
+
+  users.push(newUser);
+  saveUsers(users);
+
+  const userPayload = { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role, city: newUser.city, token: newUser.token };
+  res.json({ success: true, message: 'Registration successful', user: userPayload });
+});
+
+// 3. Get all Maharashtra bids with city, sector & keyword filtering
 app.get('/api/bids', (req, res) => {
   const { search, category, ministry, city, status, bidType, sortBy } = req.query;
   let bids = syncWorker.getBids(city);
 
-  // Keyword Search
   if (search) {
     const q = search.toLowerCase().trim();
     bids = bids.filter(b => 
@@ -50,32 +134,26 @@ app.get('/api/bids', (req, res) => {
     );
   }
 
-  // Filter Category / Sector
   if (category && category !== 'All') {
     bids = bids.filter(b => b.category.toLowerCase() === category.toLowerCase());
   }
 
-  // Filter City
   if (city && city !== 'All') {
     bids = bids.filter(b => b.city && b.city.toLowerCase().includes(city.toLowerCase()));
   }
 
-  // Filter Ministry
   if (ministry && ministry !== 'All') {
     bids = bids.filter(b => b.ministry && b.ministry.toLowerCase().includes(ministry.toLowerCase()));
   }
 
-  // Filter Status
   if (status && status !== 'All') {
     bids = bids.filter(b => b.status.toLowerCase() === status.toLowerCase());
   }
 
-  // Filter Bid Type
   if (bidType && bidType !== 'All') {
     bids = bids.filter(b => b.bidType && b.bidType.toLowerCase().includes(bidType.toLowerCase()));
   }
 
-  // Sorting
   if (sortBy === 'ending_soon') {
     bids.sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
   } else if (sortBy === 'newest') {
@@ -93,7 +171,7 @@ app.get('/api/bids', (req, res) => {
   });
 });
 
-// 3. Get Single Bid Detail
+// 4. Get Single Bid Detail
 app.get('/api/bids/:id', (req, res) => {
   const bids = syncWorker.getBids();
   const bid = bids.find(b => b.id === req.params.id || b.bidNumber === req.params.id);
@@ -103,7 +181,7 @@ app.get('/api/bids/:id', (req, res) => {
   res.json({ success: true, data: bid });
 });
 
-// 4. Trigger Live Sync for Maharashtra / Specific City
+// 5. Trigger Live Sync for Maharashtra / Specific City
 app.post('/api/bids/sync', async (req, res) => {
   try {
     const city = req.body.city || req.query.city || null;
@@ -125,9 +203,9 @@ app.post('/api/bids/sync', async (req, res) => {
   }
 });
 
-// 5. Cloud Sync Push Webhook (Pushes live tenders fetched from India to Render)
+// 6. Cloud Sync Push Webhook (Pushes live tenders fetched from India to Render)
 app.post('/api/bids/push', (req, res) => {
-  const { bids, totalFoundOnGeM, state } = req.body;
+  const { bids, totalFoundOnGeM } = req.body;
   if (!bids || !Array.isArray(bids)) {
     return res.status(400).json({ success: false, message: 'Invalid bids payload' });
   }
@@ -141,7 +219,7 @@ app.post('/api/bids/push', (req, res) => {
   });
 });
 
-// 6. Auto-Sync Schedule Management Endpoints
+// 7. Auto-Sync Schedule Management Endpoints
 app.get('/api/sync/schedules', (req, res) => {
   res.json({
     success: true,
@@ -164,7 +242,7 @@ app.post('/api/sync/schedules', (req, res) => {
   });
 });
 
-// 7. Portal Analytics & City KPI Metrics
+// 8. Portal Analytics & City KPI Metrics
 app.get('/api/stats', (req, res) => {
   const bids = syncWorker.getBids();
   const urgentCount = bids.filter(b => {
@@ -213,7 +291,7 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
-// 8. Export Bids (CSV / JSON)
+// 9. Export Bids (CSV / JSON)
 app.get('/api/export', (req, res) => {
   const bids = syncWorker.getBids(req.query.city);
   const format = req.query.format || 'json';
@@ -244,7 +322,7 @@ app.get('/api/export', (req, res) => {
   res.json(bids);
 });
 
-// 9. Catch-All Single Page Application Fallback
+// 10. Catch-All Single Page Application Fallback
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
     res.sendFile(getIndexHtmlPath());

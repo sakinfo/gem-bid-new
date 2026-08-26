@@ -9,6 +9,51 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .auth-btn-nav {
+      background: rgba(249, 115, 22, 0.15);
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      color: var(--accent-orange);
+    }
+    .auth-btn-nav:hover {
+      background: var(--accent-orange);
+      color: #ffffff;
+    }
+    .user-profile-widget {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      padding: 0.3rem 0.65rem;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+    }
+    .user-avatar-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .user-logout-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0.1rem 0.25rem;
+      transition: var(--transition);
+    }
+    .user-logout-btn:hover {
+      color: var(--accent-rose);
+    }
+  </style>
 </head>
 <body class="dark-theme">
   <!-- Top Ambient Glow -->
@@ -57,6 +102,22 @@
             <div class="export-item" onclick="exportData('json')"><i class="fa-solid fa-file-code"></i> Download JSON</div>
           </div>
         </button>
+
+        <!-- User Authentication & Profile Widget -->
+        <div id="authNavContainer">
+          <a href="login.html" class="btn auth-btn-nav" id="navLoginBtn">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>Sign In</span>
+          </a>
+          <div class="user-profile-widget" id="navUserWidget" style="display: none;">
+            <div class="user-avatar-circle" id="navUserAvatar">V</div>
+            <div style="line-height: 1.1;">
+              <strong id="navUserName" style="font-size: 0.78rem; display: block;">Nashik Vendor</strong>
+              <small id="navUserRole" style="font-size: 0.68rem; color: var(--accent-orange);">Vendor</small>
+            </div>
+            <button class="user-logout-btn" onclick="handleLogout()" title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+          </div>
+        </div>
 
         <button class="theme-toggle-btn" id="themeToggle" title="Toggle Dark/Light Mode">
           <i class="fa-solid fa-moon" id="themeIcon"></i>
@@ -362,17 +423,13 @@ fetch('http://localhost:3000/api/bids?city=Nashik&sortBy=ending_soon')
         <!-- Active Schedules Table -->
         <div class="modal-section">
           <h4>Active City Schedules & Status</h4>
-          <div id="schedulesTableContainer" class="schedules-list">
-            <!-- Dynamic Ingestion -->
-          </div>
+          <div id="schedulesTableContainer" class="schedules-list"></div>
         </div>
 
         <!-- Recent Auto-Sync Logs -->
         <div class="modal-section">
           <h4>Recent Auto-Sync Activity Logs</h4>
-          <div id="syncLogsContainer" class="sync-logs-box">
-            <!-- Dynamic Ingestion -->
-          </div>
+          <div id="syncLogsContainer" class="sync-logs-box"></div>
         </div>
       </div>
 
@@ -393,9 +450,7 @@ fetch('http://localhost:3000/api/bids?city=Nashik&sortBy=ending_soon')
         <button class="modal-close-btn" id="closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <div class="modal-body" id="modalBody">
-        <!-- Injected dynamically -->
-      </div>
+      <div class="modal-body" id="modalBody"></div>
 
       <div class="modal-footer">
         <button class="btn btn-secondary" id="modalTrackBtn">

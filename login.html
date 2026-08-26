@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeM Maharashtra Pulse - Secure Login & Vendor Access</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* =========================================================
+       Login Page Dedicated Styles
+       ========================================================= */
+    .auth-page-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 460px;
+      padding: 2.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      position: relative;
+    }
+
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-orange), transparent);
+    }
+
+    .auth-brand {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .auth-badge {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      border-radius: var(--radius-md);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 1.6rem;
+      margin-bottom: 0.85rem;
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+    }
+
+    .auth-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .auth-title span {
+      color: var(--accent-orange);
+    }
+
+    .auth-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    /* Role Selector Pills */
+    .role-toggle-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.4rem;
+      background: var(--bg-input);
+      padding: 0.3rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .role-pill {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.45rem 0.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+      transition: var(--transition);
+    }
+
+    .role-pill i {
+      font-size: 0.85rem;
+    }
+
+    .role-pill.active {
+      background: var(--accent-orange);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(249, 115, 22, 0.35);
+    }
+
+    /* Auth Tabs (Login / Register) */
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      text-align: center;
+      padding: 0.65rem 0.5rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .auth-tab-btn.active {
+      color: var(--accent-orange);
+    }
+
+    .auth-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent-orange);
+    }
+
+    /* Input Field Groups */
+    .input-field-group {
+      margin-bottom: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .input-field-group label {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .input-with-icon {
+      position: relative;
+    }
+
+    .input-with-icon i.input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .input-with-icon input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 2.6rem 0.75rem 2.6rem;
+      color: var(--text-primary);
+      font-size: 0.88rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .input-with-icon input:focus {
+      border-color: var(--accent-orange);
+      box-shadow: 0 0 0 3px var(--accent-orange-glow);
+    }
+
+    .toggle-pwd-btn {
+      position: absolute;
+      right: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .toggle-pwd-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .form-options-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .remember-label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      color: var(--accent-orange);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    .btn-auth-submit {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 0.92rem;
+      justify-content: center;
+    }
+
+    /* Quick Demo Login Presets */
+    .demo-accounts-box {
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .demo-accounts-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 0.65rem;
+    }
+
+    .demo-btns-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .demo-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.45rem 0.6rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: var(--transition);
+    }
+
+    .demo-btn:hover {
+      background: var(--border-color);
+      color: var(--accent-orange);
+      border-color: var(--accent-orange);
+    }
+
+    .back-home-link {
+      display: block;
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .back-home-link:hover {
+      color: var(--accent-orange);
+    }
+  </style>
+</head>
+<body class="dark-theme">
+  <!-- Top Ambient Glow -->
+  <div class="ambient-glow"></div>
+
+  <div class="auth-page-wrap">
+    <div class="auth-card glass-panel">
+      
+      <!-- Brand Header -->
+      <div class="auth-brand">
+        <div class="auth-badge">
+          <i class="fa-solid fa-building-columns"></i>
+        </div>
+        <h1 class="auth-title"><span>GeM</span> Maharashtra Pulse</h1>
+        <p class="auth-subtitle">Government Tender & Bid Tracking Portal</p>
+      </div>
+
+      <!-- Role Selection -->
+      <div class="role-toggle-bar" id="roleToggleBar">
+        <button class="role-pill active" data-role="Vendor"><i class="fa-solid fa-store"></i> Vendor / Bidder</button>
+        <button class="role-pill" data-role="Buyer"><i class="fa-solid fa-landmark"></i> Dept Buyer</button>
+        <button class="role-pill" data-role="Admin"><i class="fa-solid fa-shield-halved"></i> GeM Admin</button>
+      </div>
+
+      <!-- Auth Mode Switch (Login / Sign Up) -->
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthMode('login')">Sign In</button>
+        <button class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthMode('register')">Register New Account</button>
+      </div>
+
+      <!-- Auth Form -->
+      <form id="authForm" onsubmit="handleAuthSubmit(event)">
+        
+        <!-- Full Name (Only for registration) -->
+        <div class="input-field-group" id="nameGroup" style="display: none;">
+          <label>Full Name / Company Name</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-user input-icon"></i>
+            <input type="text" id="authName" placeholder="e.g. Nashik Precision Tools Pvt Ltd">
+          </div>
+        </div>
+
+        <!-- City (Only for registration) -->
+        <div class="input-field-group" id="cityGroup" style="display: none;">
+          <label>Primary Maharashtra City</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-location-dot input-icon"></i>
+            <select id="authCity" class="custom-select" style="width: 100%; padding-left: 2.6rem;">
+              <option value="Nashik" selected>Nashik</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Pune">Pune</option>
+              <option value="Nagpur">Nagpur</option>
+              <option value="Thane">Thane</option>
+              <option value="Chhatrapati Sambhajinagar">Chhatrapati Sambhajinagar</option>
+              <option value="Kolhapur">Kolhapur</option>
+              <option value="Solapur">Solapur</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Email Address -->
+        <div class="input-field-group">
+          <label>Official Email Address</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-envelope input-icon"></i>
+            <input type="email" id="authEmail" placeholder="name@company.com" required value="vendor@nashik.com">
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="input-field-group">
+          <label>Password</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" id="authPassword" placeholder="••••••••" required value="admin123">
+            <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility()"><i class="fa-solid fa-eye" id="pwdEyeIcon"></i></button>
+          </div>
+        </div>
+
+        <!-- Options Row -->
+        <div class="form-options-row">
+          <label class="remember-label">
+            <input type="checkbox" id="rememberMe" checked>
+            <span>Remember login</span>
+          </label>
+          <a href="#" class="forgot-link" onclick="showToast('Password reset link sent to registered email!')">Forgot password?</a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary btn-auth-submit" id="authSubmitBtn">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span id="authSubmitText">Sign In to GeM Portal</span>
+        </button>
+      </form>
+
+      <!-- 1-Click Demo Accounts -->
+      <div class="demo-accounts-box">
+        <div class="demo-accounts-title">1-Click Quick Demo Login</div>
+        <div class="demo-btns-grid">
+          <button class="demo-btn" onclick="fillDemo('vendor')">
+            <i class="fa-solid fa-store" style="color: var(--accent-orange);"></i> Nashik Vendor
+          </button>
+          <button class="demo-btn" onclick="fillDemo('buyer')">
+            <i class="fa-solid fa-landmark" style="color: var(--accent-blue);"></i> MH Buyer
+          </button>
+        </div>
+      </div>
+
+      <!-- Return Link -->
+      <a href="index.html" class="back-home-link">
+        <i class="fa-solid fa-arrow-left"></i> Back to Public Bids Portal
+      </a>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-notification" id="toast">
+    <i class="fa-solid fa-circle-check toast-icon"></i>
+    <span id="toastMsg">Logged in successfully</span>
+  </div>
+
+  <script>
+    let authMode = 'login';
+    let currentRole = 'Vendor';
+
+    // Role selection
+    document.querySelectorAll('.role-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.role-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentRole = btn.getAttribute('data-role');
+      });
+    });
+
+    function switchAuthMode(mode) {
+      authMode = mode;
+      const tabLogin = document.getElementById('tabLoginBtn');
+      const tabRegister = document.getElementById('tabRegisterBtn');
+      const nameGroup = document.getElementById('nameGroup');
+      const cityGroup = document.getElementById('cityGroup');
+      const submitText = document.getElementById('authSubmitText');
+
+      if (mode === 'register') {
+        tabLogin.classList.remove('active');
+        tabRegister.classList.add('active');
+        nameGroup.style.display = 'flex';
+        cityGroup.style.display = 'flex';
+        submitText.textContent = 'Create GeM Vendor Account';
+      } else {
+        tabRegister.classList.remove('active');
+        tabLogin.classList.add('active');
+        nameGroup.style.display = 'none';
+        cityGroup.style.display = 'none';
+        submitText.textContent = 'Sign In to GeM Portal';
+      }
+    }
+
+    function togglePasswordVisibility() {
+      const pwd = document.getElementById('authPassword');
+      const icon = document.getElementById('pwdEyeIcon');
+      if (pwd.type === 'password') {
+        pwd.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+      } else {
+        pwd.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+      }
+    }
+
+    function fillDemo(type) {
+      if (type === 'vendor') {
+        document.getElementById('authEmail').value = 'vendor@nashik.com';
+        document.getElementById('authPassword').value = 'vendor123';
+        document.querySelector('.role-pill[data-role="Vendor"]').click();
+      } else {
+        document.getElementById('authEmail').value = 'buyer@maharashtra.gov.in';
+        document.getElementById('authPassword').value = 'buyer123';
+        document.querySelector('.role-pill[data-role="Buyer"]').click();
+      }
+      showToast(`Filled demo credentials for ${type.toUpperCase()}`);
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value;
+      const password = document.getElementById('authPassword').value;
+      const name = document.getElementById('authName')?.value || email.split('@')[0];
+      const city = document.getElementById('authCity')?.value || 'Nashik';
+
+      const submitBtn = document.getElementById('authSubmitBtn');
+      submitBtn.disabled = true;
+
+      try {
+        const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, name, city, role: currentRole })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          localStorage.setItem('gem_user', JSON.stringify(data.user));
+          showToast(`Welcome back, ${data.user.name}! Redirecting...`);
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1000);
+        } else {
+          showToast(data.message || 'Authentication failed', true);
+        }
+      } catch (err) {
+        // Local offline demo fallback
+        const mockUser = {
+          name: name || 'Nashik Vendor',
+          email: email,
+          role: currentRole,
+          city: city,
+          token: 'demo-token-' + Date.now()
+        };
+        localStorage.setItem('gem_user', JSON.stringify(mockUser));
+        showToast(`Welcome, ${mockUser.name}! Redirecting...`);
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1000);
+      } finally {
+        submitBtn.disabled = false;
+      }
+    }
+
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      const icon = toast.querySelector('.toast-icon');
+      
+      toastMsg.textContent = msg;
+      icon.className = isError ? 'fa-solid fa-circle-exclamation toast-icon' : 'fa-solid fa-circle-check toast-icon';
+      icon.style.color = isError ? 'var(--accent-rose)' : 'var(--accent-emerald)';
+
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+  </script>
+</body>
+</html>

@@ -78,17 +78,41 @@ const elements = {
   toastMsg: document.getElementById('toastMsg')
 };
 
-// =========================================================
-// Initialization
-// =========================================================
 document.addEventListener('DOMContentLoaded', async () => {
   initTheme();
+  initUserSession();
   setupEventListeners();
   await refreshPortalData();
   await loadSchedules();
   startCountdownTicker();
   startScheduleTicker();
 });
+
+function initUserSession() {
+  const user = JSON.parse(localStorage.getItem('gem_user') || 'null');
+  const loginBtn = document.getElementById('navLoginBtn');
+  const userWidget = document.getElementById('navUserWidget');
+  const userName = document.getElementById('navUserName');
+  const userRole = document.getElementById('navUserRole');
+  const userAvatar = document.getElementById('navUserAvatar');
+
+  if (user && userWidget && loginBtn) {
+    loginBtn.style.display = 'none';
+    userWidget.style.display = 'flex';
+    if (userName) userName.textContent = user.name || 'Vendor User';
+    if (userRole) userRole.textContent = `${user.role || 'Vendor'} • ${user.city || 'Nashik'}`;
+    if (userAvatar) userAvatar.textContent = (user.name || 'V').charAt(0).toUpperCase();
+  } else if (loginBtn && userWidget) {
+    loginBtn.style.display = 'inline-flex';
+    userWidget.style.display = 'none';
+  }
+}
+
+function handleLogout() {
+  localStorage.removeItem('gem_user');
+  initUserSession();
+  showToast('Logged out successfully');
+}
 
 async function refreshPortalData() {
   await loadBids();

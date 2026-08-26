@@ -2,32 +2,32 @@
   "NASHIK": {
     "intervalMinutes": 2,
     "enabled": true,
-    "lastSync": "2026-08-26T05:38:14.968Z",
-    "nextSync": "2026-08-26T05:40:14.968Z"
+    "lastSync": "2026-08-26T06:00:39.849Z",
+    "nextSync": "2026-08-26T06:02:39.849Z"
   },
   "MUMBAI": {
     "intervalMinutes": 15,
     "enabled": true,
-    "lastSync": "2026-08-26T05:33:45.457Z",
-    "nextSync": "2026-08-26T05:48:45.457Z"
+    "lastSync": "2026-08-26T05:49:14.802Z",
+    "nextSync": "2026-08-26T06:04:14.802Z"
   },
   "PUNE": {
     "intervalMinutes": 15,
     "enabled": true,
-    "lastSync": "2026-08-26T05:33:50.218Z",
-    "nextSync": "2026-08-26T05:48:50.218Z"
+    "lastSync": "2026-08-26T05:49:18.514Z",
+    "nextSync": "2026-08-26T06:04:18.514Z"
   },
   "NAGPUR": {
     "intervalMinutes": 30,
     "enabled": true,
-    "lastSync": "2026-08-26T05:17:16.424Z",
-    "nextSync": "2026-08-26T05:47:16.424Z"
+    "lastSync": "2026-08-26T05:47:46.087Z",
+    "nextSync": "2026-08-26T06:17:46.087Z"
   },
   "THANE": {
     "intervalMinutes": 30,
     "enabled": true,
-    "lastSync": "2026-08-26T05:17:19.122Z",
-    "nextSync": "2026-08-26T05:47:19.122Z"
+    "lastSync": "2026-08-26T05:47:49.466Z",
+    "nextSync": "2026-08-26T06:17:49.466Z"
   },
   "AURANGABAD": {
     "intervalMinutes": 60,
