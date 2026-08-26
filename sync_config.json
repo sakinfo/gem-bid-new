@@ -2,8 +2,8 @@
   "NASHIK": {
     "intervalMinutes": 2,
     "enabled": true,
-    "lastSync": "2026-08-26T05:18:47.172Z",
-    "nextSync": "2026-08-26T05:20:47.172Z"
+    "lastSync": "2026-08-26T05:26:01.627Z",
+    "nextSync": "2026-08-26T05:28:01.627Z"
   },
   "MUMBAI": {
     "intervalMinutes": 15,

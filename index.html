@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeM Maharashtra Live Bids Portal (City-Wise Tender Tracker)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="dark-theme">
+  <!-- Top Ambient Glow -->
+  <div class="ambient-glow"></div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand-group">
+        <div class="brand-badge maharashtra-badge">
+          <i class="fa-solid fa-map-location-dot"></i>
+        </div>
+        <div>
+          <div class="brand-title">
+            <span>GeM</span> Maharashtra Pulse
+            <span class="portal-tag"><i class="fa-solid fa-bolt"></i> Live Consignee Feeds</span>
+          </div>
+          <p class="brand-subtitle">Government e-Marketplace | City-Wise Real-Time Tracker</p>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <!-- Live Status & Sync -->
+        <div class="sync-status-box" id="syncStatusBox">
+          <span class="status-dot pulsing"></span>
+          <span class="sync-label">Nashik Auto-Sync: <strong id="nashikNextSync">Every 5 min</strong></span>
+          <span class="last-sync-time" id="lastSyncTime">Ready</span>
+        </div>
+
+        <!-- Auto-Sync Frequency Settings Button -->
+        <button class="btn btn-secondary" id="scheduleBtn" title="Set City Auto-Sync Intervals">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>Auto-Sync Frequency</span>
+        </button>
+
+        <button class="btn btn-primary btn-sync" id="syncBtn" title="Fetch fresh live tenders for selected city">
+          <i class="fa-solid fa-arrows-rotate" id="syncIcon"></i>
+          <span id="syncBtnText">Fetch Live Bids</span>
+        </button>
+
+        <button class="btn btn-secondary" id="exportBtn" title="Export Maharashtra Bids">
+          <i class="fa-solid fa-file-export"></i>
+          <span>Export</span>
+          <div class="export-dropdown" id="exportDropdown">
+            <div class="export-item" onclick="exportData('csv')"><i class="fa-solid fa-file-csv"></i> Download CSV</div>
+            <div class="export-item" onclick="exportData('json')"><i class="fa-solid fa-file-code"></i> Download JSON</div>
+          </div>
+        </button>
+
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Dark/Light Mode">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+    
+    <!-- Hero / KPI Summary Bar -->
+    <section class="kpi-grid">
+      <div class="kpi-card glass-panel">
+        <div class="kpi-icon-wrap orange">
+          <i class="fa-solid fa-landmark-dome"></i>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-title">Active Maharashtra Tenders</span>
+          <h2 class="kpi-value" id="kpiTotalOnPortal">4,630+</h2>
+          <span class="kpi-hint"><i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Exact Consignee Feeds</span>
+        </div>
+      </div>
+
+      <div class="kpi-card glass-panel">
+        <div class="kpi-icon-wrap blue">
+          <i class="fa-solid fa-city"></i>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-title">Filtered Tenders</span>
+          <h2 class="kpi-value" id="kpiTotalBids">--</h2>
+          <span class="kpi-hint" id="kpiCityLabel">All Maharashtra Cities</span>
+        </div>
+      </div>
+
+      <div class="kpi-card glass-panel">
+        <div class="kpi-icon-wrap amber">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-title">Closing Within 24 Hours</span>
+          <h2 class="kpi-value" id="kpiUrgentBids">--</h2>
+          <span class="kpi-hint urgent-text"><i class="fa-solid fa-triangle-exclamation"></i> Immediate submission deadline</span>
+        </div>
+      </div>
+
+      <div class="kpi-card glass-panel">
+        <div class="kpi-icon-wrap emerald">
+          <i class="fa-solid fa-gavel"></i>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-title">Custom BOQ & RA Bids</span>
+          <h2 class="kpi-value" id="kpiHighValue">--</h2>
+          <span class="kpi-hint">High priority tenders</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Maharashtra City Selector Pill Bar -->
+    <section class="city-pills-bar glass-panel">
+      <div class="city-pills-header">
+        <span><i class="fa-solid fa-location-crosshairs"></i> Select Maharashtra City / District:</span>
+        <span class="schedule-pill-hint" onclick="openScheduleModal()"><i class="fa-solid fa-gear"></i> Set Auto-Sync Interval</span>
+      </div>
+      <div class="city-pills-list" id="cityPillsList">
+        <button class="city-pill active" data-city="All"><i class="fa-solid fa-earth-asia"></i> All Maharashtra</button>
+        <button class="city-pill" data-city="Nashik"><i class="fa-solid fa-industry"></i> Nashik (266 Active)</button>
+        <button class="city-pill" data-city="Mumbai"><i class="fa-solid fa-city"></i> Mumbai (1,770+)</button>
+        <button class="city-pill" data-city="Pune"><i class="fa-solid fa-building"></i> Pune (870+)</button>
+        <button class="city-pill" data-city="Nagpur"><i class="fa-solid fa-tree-city"></i> Nagpur (480+)</button>
+        <button class="city-pill" data-city="Thane"><i class="fa-solid fa-building-flag"></i> Thane (425+)</button>
+        <button class="city-pill" data-city="Chhatrapati Sambhajinagar"><i class="fa-solid fa-fort-awesome"></i> Chh. Sambhajinagar (105+)</button>
+        <button class="city-pill" data-city="Navi Mumbai"><i class="fa-solid fa-road"></i> Navi Mumbai</button>
+        <button class="city-pill" data-city="Solapur"><i class="fa-solid fa-sun"></i> Solapur</button>
+        <button class="city-pill" data-city="Kolhapur"><i class="fa-solid fa-shield"></i> Kolhapur</button>
+        <button class="city-pill" data-city="Amravati"><i class="fa-solid fa-mountain"></i> Amravati</button>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs & View Mode -->
+    <div class="view-header-bar">
+      <div class="tabs-group">
+        <button class="tab-btn active" data-tab="all">
+          <i class="fa-solid fa-list-check"></i> All Tenders (<span id="allCount">0</span>)
+        </button>
+        <button class="tab-btn" data-tab="urgent">
+          <i class="fa-solid fa-fire"></i> Ending Soon (<span id="urgentCount">0</span>)
+        </button>
+        <button class="tab-btn" data-tab="tracked">
+          <i class="fa-solid fa-star"></i> My Tracked (<span id="trackedCount">0</span>)
+        </button>
+        <button class="tab-btn" data-tab="analytics">
+          <i class="fa-solid fa-chart-pie"></i> City Analytics
+        </button>
+      </div>
+
+      <div class="view-toggle-group">
+        <button class="view-btn active" id="viewCardBtn" title="Card View">
+          <i class="fa-solid fa-grip"></i>
+        </button>
+        <button class="view-btn" id="viewTableBtn" title="Table View">
+          <i class="fa-solid fa-table-list"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <section class="controls-panel glass-panel">
+      <!-- Search Input -->
+      <div class="search-wrap">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="searchInput" placeholder="Search Maharashtra bids by Bid No (e.g. GEM/2026/...), Item, City, Department, Authority..." autocomplete="off">
+        <button class="clear-search-btn" id="clearSearchBtn" title="Clear Search"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Filters Row -->
+      <div class="filters-row">
+        <div class="filter-item">
+          <label><i class="fa-solid fa-city"></i> City / District</label>
+          <select id="cityFilter" class="custom-select">
+            <option value="All">All Maharashtra</option>
+            <option value="Nashik">Nashik</option>
+            <option value="Mumbai">Mumbai</option>
+            <option value="Pune">Pune</option>
+            <option value="Nagpur">Nagpur</option>
+            <option value="Thane">Thane</option>
+            <option value="Chhatrapati Sambhajinagar">Chhatrapati Sambhajinagar (Aurangabad)</option>
+            <option value="Navi Mumbai">Navi Mumbai</option>
+            <option value="Solapur">Solapur</option>
+            <option value="Kolhapur">Kolhapur</option>
+            <option value="Amravati">Amravati</option>
+            <option value="Nanded">Nanded</option>
+            <option value="Satara">Satara</option>
+            <option value="Sangli">Sangli</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label><i class="fa-solid fa-shapes"></i> Sector</label>
+          <select id="categoryFilter" class="custom-select">
+            <option value="All">All Sectors</option>
+            <option value="Defence & Security">Defence & Security</option>
+            <option value="Medical & Healthcare">Medical & Healthcare</option>
+            <option value="IT & Computing">IT & Computing</option>
+            <option value="Energy & Petroleum">Energy & Petroleum</option>
+            <option value="Railways & Infra">Railways & Infra</option>
+            <option value="Goods & Equipment">Goods & Equipment</option>
+            <option value="Services & Facility">Services & Facility</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label><i class="fa-solid fa-gavel"></i> Bid Type</label>
+          <select id="bidTypeFilter" class="custom-select">
+            <option value="All">All Bid Types</option>
+            <option value="Product Bid">Product Bid</option>
+            <option value="Reverse Auction">Bid to RA (Reverse Auction)</option>
+            <option value="Custom Bid">Custom BOQ Bid</option>
+            <option value="Service Bid">Service Bid</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label><i class="fa-solid fa-arrow-down-wide-short"></i> Sort By</label>
+          <select id="sortBy" class="custom-select">
+            <option value="ending_soon">⏳ Ending Soonest</option>
+            <option value="newest">✨ Newly Published</option>
+          </select>
+        </div>
+
+        <button class="btn btn-secondary btn-reset" id="resetFiltersBtn" title="Reset all filters">
+          <i class="fa-solid fa-rotate-left"></i> Reset
+        </button>
+      </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <div id="contentArea">
+      <!-- Loading State (hidden by default) -->
+      <div class="loading-state" id="loadingState" style="display: none;">
+        <div class="spinner"></div>
+        <p>Connecting to GeM portal and fetching live Maharashtra tenders...</p>
+      </div>
+
+      <!-- Cards Grid View -->
+      <div class="bids-grid" id="bidsGrid"></div>
+
+      <!-- Table View -->
+      <div class="bids-table-wrap glass-panel" id="bidsTableWrap" style="display: none;">
+        <table class="bids-table">
+          <thead>
+            <tr>
+              <th>Bid Details</th>
+              <th>City / Location</th>
+              <th>Ministry & Department</th>
+              <th>Sector</th>
+              <th>Required Qty</th>
+              <th>Submission Deadline</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="bidsTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state glass-panel" id="emptyState" style="display: none;">
+        <i class="fa-solid fa-magnifying-glass-chart empty-icon"></i>
+        <h3 id="emptyStateTitle">No matching Maharashtra bids found</h3>
+        <p id="emptyStateDesc">Try adjusting your filters or click below to pull fresh tenders directly from GeM.</p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+          <button class="btn btn-secondary" onclick="resetAllFilters()"><i class="fa-solid fa-rotate-left"></i> Reset Filters</button>
+          <button class="btn btn-primary" id="emptyFetchBtn" onclick="triggerSync()"><i class="fa-solid fa-arrows-rotate"></i> Fetch Fresh Bids from GeM</button>
+        </div>
+      </div>
+
+      <!-- Analytics Dashboard View (Tab 4) -->
+      <div class="analytics-container" id="analyticsView" style="display: none;">
+        <div class="analytics-grid">
+          <div class="analytics-card glass-panel">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-city"></i> Live Tenders by Maharashtra City</h3>
+            </div>
+            <div class="category-bars" id="cityBars"></div>
+          </div>
+
+          <div class="analytics-card glass-panel">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-shapes"></i> Sector Allocation in Maharashtra</h3>
+            </div>
+            <div class="category-bars" id="categoryBars"></div>
+          </div>
+        </div>
+
+        <!-- Integration Snippet Box -->
+        <div class="integration-guide glass-panel">
+          <div class="guide-header">
+            <h3><i class="fa-solid fa-code"></i> Ingest Maharashtra City Bids in Your Code</h3>
+            <span class="badge-code">REST API</span>
+          </div>
+          <p class="guide-desc">Query live bids by city with a single parameter:</p>
+          <div class="code-snippet-box">
+            <pre><code>// Fetch Live Nashik Tenders (Exact Consignee Location)
+fetch('http://localhost:3000/api/bids?city=Nashik&sortBy=ending_soon')
+  .then(res => res.json())
+  .then(res => console.log(res.data));</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Auto-Sync Frequency Settings Modal -->
+  <div class="modal-overlay" id="scheduleModal">
+    <div class="modal-card glass-panel" style="max-width: 650px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-orange); font-size: 1.25rem;"></i>
+          <h3 style="font-size: 1.1rem; font-weight: 700;">City Auto-Sync Frequency Settings</h3>
+        </div>
+        <button class="modal-close-btn" id="closeScheduleModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <p style="font-size: 0.84rem; color: var(--text-secondary);">
+          Set automatic background synchronization intervals for specific Maharashtra cities to ensure you never miss newly published tenders on GeM.
+        </p>
+
+        <!-- City Frequency Form -->
+        <div class="schedule-form-box">
+          <div class="filter-item">
+            <label><i class="fa-solid fa-city"></i> Select City to Configure</label>
+            <select id="scheduleCitySelect" class="custom-select">
+              <option value="NASHIK" selected>Nashik</option>
+              <option value="MUMBAI">Mumbai</option>
+              <option value="PUNE">Pune</option>
+              <option value="NAGPUR">Nagpur</option>
+              <option value="THANE">Thane</option>
+              <option value="AURANGABAD">Chhatrapati Sambhajinagar</option>
+              <option value="KOLHAPUR">Kolhapur</option>
+              <option value="SOLAPUR">Solapur</option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label><i class="fa-solid fa-hourglass-half"></i> Sync Interval Frequency</label>
+            <select id="scheduleIntervalSelect" class="custom-select">
+              <option value="2">⚡ Every 2 Minutes (Real-Time Rush)</option>
+              <option value="5" selected>🕒 Every 5 Minutes (Recommended for Nashik)</option>
+              <option value="15">⏱️ Every 15 Minutes</option>
+              <option value="30">⏳ Every 30 Minutes</option>
+              <option value="60">📅 Every 1 Hour</option>
+              <option value="180">📅 Every 3 Hours</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary" id="saveScheduleBtn" style="margin-top: 0.5rem;">
+            <i class="fa-solid fa-floppy-disk"></i> Save City Interval
+          </button>
+        </div>
+
+        <!-- Active Schedules Table -->
+        <div class="modal-section">
+          <h4>Active City Schedules & Status</h4>
+          <div id="schedulesTableContainer" class="schedules-list">
+            <!-- Dynamic Ingestion -->
+          </div>
+        </div>
+
+        <!-- Recent Auto-Sync Logs -->
+        <div class="modal-section">
+          <h4>Recent Auto-Sync Activity Logs</h4>
+          <div id="syncLogsContainer" class="sync-logs-box">
+            <!-- Dynamic Ingestion -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeScheduleModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bid Detail Modal -->
+  <div class="modal-overlay" id="bidModal">
+    <div class="modal-card glass-panel">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="bid-pill" id="modalBidNo">GEM/2026/...</span>
+          <span class="status-badge" id="modalStatus">Active</span>
+        </div>
+        <button class="modal-close-btn" id="closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body" id="modalBody">
+        <!-- Injected dynamically -->
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modalTrackBtn">
+          <i class="fa-solid fa-star"></i> Track Bid
+        </button>
+        <a href="#" target="_blank" class="btn btn-primary" id="modalDocLink" rel="noopener noreferrer">
+          <i class="fa-solid fa-file-pdf"></i> Download Official GeM PDF
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-notification" id="toast">
+    <i class="fa-solid fa-circle-check toast-icon"></i>
+    <span id="toastMsg">Operation successful</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

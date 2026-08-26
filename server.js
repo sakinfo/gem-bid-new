@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const syncWorker = require('./sync-worker');
 
 const app = express();
@@ -9,15 +10,28 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Serve static frontend files
+// Serve static assets from both 'public' and root directory
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
-// Explicit Root Route handler
+function getIndexHtmlPath() {
+  const pubPath = path.join(__dirname, 'public', 'index.html');
+  if (fs.existsSync(pubPath)) return pubPath;
+  const rootPath = path.join(__dirname, 'index.html');
+  if (fs.existsSync(rootPath)) return rootPath;
+  return pubPath;
+}
+
+// 1. Root & Index Route Handlers (Bulletproof)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(getIndexHtmlPath());
 });
 
-// 1. Get all Maharashtra bids with city, sector & keyword filtering
+app.get('/index.html', (req, res) => {
+  res.sendFile(getIndexHtmlPath());
+});
+
+// 2. Get all Maharashtra bids with city, sector & keyword filtering
 app.get('/api/bids', (req, res) => {
   const { search, category, ministry, city, status, bidType, sortBy } = req.query;
   let bids = syncWorker.getBids(city);
@@ -79,7 +93,7 @@ app.get('/api/bids', (req, res) => {
   });
 });
 
-// 2. Get Single Bid Detail
+// 3. Get Single Bid Detail
 app.get('/api/bids/:id', (req, res) => {
   const bids = syncWorker.getBids();
   const bid = bids.find(b => b.id === req.params.id || b.bidNumber === req.params.id);
@@ -89,7 +103,7 @@ app.get('/api/bids/:id', (req, res) => {
   res.json({ success: true, data: bid });
 });
 
-// 3. Trigger Live Sync for Maharashtra / Specific City
+// 4. Trigger Live Sync for Maharashtra / Specific City
 app.post('/api/bids/sync', async (req, res) => {
   try {
     const city = req.body.city || req.query.city || null;
@@ -104,7 +118,7 @@ app.post('/api/bids/sync', async (req, res) => {
   }
 });
 
-// 4. Auto-Sync Schedule Management Endpoints
+// 5. Auto-Sync Schedule Management Endpoints
 app.get('/api/sync/schedules', (req, res) => {
   res.json({
     success: true,
@@ -127,7 +141,7 @@ app.post('/api/sync/schedules', (req, res) => {
   });
 });
 
-// 5. Portal Analytics & City KPI Metrics
+// 6. Portal Analytics & City KPI Metrics
 app.get('/api/stats', (req, res) => {
   const bids = syncWorker.getBids();
   const urgentCount = bids.filter(b => {
@@ -176,7 +190,7 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
-// 6. Export Bids (CSV / JSON)
+// 7. Export Bids (CSV / JSON)
 app.get('/api/export', (req, res) => {
   const bids = syncWorker.getBids(req.query.city);
   const format = req.query.format || 'json';
@@ -207,10 +221,10 @@ app.get('/api/export', (req, res) => {
   res.json(bids);
 });
 
-// Fallback for Single Page Application
+// 8. Catch-All Single Page Application Fallback
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(getIndexHtmlPath());
   } else {
     res.status(404).json({ success: false, message: 'API endpoint not found' });
   }
