@@ -1,8 +1,8 @@
 {
-  "lastUpdated": "2026-08-26T05:26:01.635Z",
+  "lastUpdated": "2026-08-26T05:38:14.971Z",
   "state": "MAHARASHTRA",
-  "totalFoundOnGeM": 795,
-  "totalCount": 312,
+  "totalFoundOnGeM": 792,
+  "totalCount": 313,
   "isExactConsigneeLocationData": true,
   "bids": [
     {
@@ -9616,6 +9616,37 @@
       "status": "Active",
       "isExactConsigneeLocationData": true,
       "description": "Official Live Government Tender (GEM/2026/B/7885190) for Consignee Location Thane, Maharashtra published on GeM by PMO - Department of Atomic Energy for item \"Sensor rubber cover along with SS clamp as per attached technical specification attached\". Total Quantity: 110 Units. Reverse Auction: No."
+    },
+    {
+      "id": "GEM-9725951",
+      "bidNumber": "GEM/2026/B/7891427",
+      "title": "Manpower Outsourcing Services - Minimum wage - Unskilled; Not Required; Others",
+      "category": "Defence & Security",
+      "rawCategory": "Manpower Outsourcing Services - Minimum wage - Unskilled; Not Required; Others",
+      "ministry": "Ministry of Defence",
+      "department": "Department of Defence",
+      "quantity": "85 Units",
+      "estimatedValue": 2500000,
+      "formattedValue": "As per Bid Schedule",
+      "startDate": "2026-08-07T18:02:52Z",
+      "endDate": "2026-08-28T18:00:00Z",
+      "bidType": "Service Bid",
+      "hasReverseAuction": false,
+      "emdAmount": "Refer to Bid Document (Exempt for MSME/Startups)",
+      "state": "Maharashtra",
+      "city": "Pune",
+      "consigneeState": "Maharashtra",
+      "consigneeAddress": "Consignee Delivery Office, Pune, Maharashtra",
+      "makeInIndia": "Class-I / Class-II Local Supplier Preference Applicable",
+      "eligibility": {
+        "minTurnover": "As per GeM Bid Specification",
+        "pastExperienceYears": 2,
+        "oemAuthorizationRequired": true
+      },
+      "documentUrl": "https://bidplus.gem.gov.in/showbidDocument/9725951",
+      "status": "Active",
+      "isExactConsigneeLocationData": true,
+      "description": "Official Live Government Tender (GEM/2026/B/7891427) for Consignee Location Pune, Maharashtra published on GeM by Ministry of Defence - Department of Defence for item \"Manpower Outsourcing Services - Minimum wage - Unskilled; Not Required; Others\". Total Quantity: 85 Units. Reverse Auction: No."
     }
   ]
 }

@@ -1,5 +1,61 @@
 [
   {
+    "id": 1787722694968,
+    "timestamp": "2026-08-26T05:38:14.968Z",
+    "city": "NASHIK",
+    "status": "SUCCESS",
+    "message": "Synchronized 264 live bids from GeM",
+    "count": 264
+  },
+  {
+    "id": 1787722544213,
+    "timestamp": "2026-08-26T05:35:44.213Z",
+    "city": "NASHIK",
+    "status": "SUCCESS",
+    "message": "Synchronized 264 live bids from GeM",
+    "count": 264
+  },
+  {
+    "id": 1787722430218,
+    "timestamp": "2026-08-26T05:33:50.218Z",
+    "city": "PUNE",
+    "status": "SUCCESS",
+    "message": "Synchronized 817 live bids from GeM",
+    "count": 817
+  },
+  {
+    "id": 1787722425457,
+    "timestamp": "2026-08-26T05:33:45.457Z",
+    "city": "MUMBAI",
+    "status": "SUCCESS",
+    "message": "Synchronized 1715 live bids from GeM",
+    "count": 1715
+  },
+  {
+    "id": 1787722394616,
+    "timestamp": "2026-08-26T05:33:14.616Z",
+    "city": "NASHIK",
+    "status": "SUCCESS",
+    "message": "Synchronized 264 live bids from GeM",
+    "count": 264
+  },
+  {
+    "id": 1787722262992,
+    "timestamp": "2026-08-26T05:31:02.992Z",
+    "city": "NASHIK",
+    "status": "SUCCESS",
+    "message": "Synchronized 264 live bids from GeM",
+    "count": 264
+  },
+  {
+    "id": 1787722112642,
+    "timestamp": "2026-08-26T05:28:32.642Z",
+    "city": "NASHIK",
+    "status": "SUCCESS",
+    "message": "Synchronized 265 live bids from GeM",
+    "count": 265
+  },
+  {
     "id": 1787721961628,
     "timestamp": "2026-08-26T05:26:01.628Z",
     "city": "NASHIK",

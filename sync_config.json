@@ -2,20 +2,20 @@
   "NASHIK": {
     "intervalMinutes": 2,
     "enabled": true,
-    "lastSync": "2026-08-26T05:26:01.627Z",
-    "nextSync": "2026-08-26T05:28:01.627Z"
+    "lastSync": "2026-08-26T05:38:14.968Z",
+    "nextSync": "2026-08-26T05:40:14.968Z"
   },
   "MUMBAI": {
     "intervalMinutes": 15,
     "enabled": true,
-    "lastSync": "2026-08-26T05:18:16.482Z",
-    "nextSync": "2026-08-26T05:33:16.482Z"
+    "lastSync": "2026-08-26T05:33:45.457Z",
+    "nextSync": "2026-08-26T05:48:45.457Z"
   },
   "PUNE": {
     "intervalMinutes": 15,
     "enabled": true,
-    "lastSync": "2026-08-26T05:18:19.470Z",
-    "nextSync": "2026-08-26T05:33:19.470Z"
+    "lastSync": "2026-08-26T05:33:50.218Z",
+    "nextSync": "2026-08-26T05:48:50.218Z"
   },
   "NAGPUR": {
     "intervalMinutes": 30,

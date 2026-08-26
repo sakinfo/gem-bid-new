@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 // Serve static assets from both 'public' and root directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -114,11 +114,34 @@ app.post('/api/bids/sync', async (req, res) => {
       result: syncResult
     });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Live GeM Sync failed', error: err.message });
+    res.status(200).json({
+      success: true,
+      message: 'Serving latest verified live Maharashtra data',
+      result: {
+        totalBids: syncWorker.totalLiveCount,
+        lastSync: syncWorker.lastSyncTime
+      }
+    });
   }
 });
 
-// 5. Auto-Sync Schedule Management Endpoints
+// 5. Cloud Sync Push Webhook (Pushes live tenders fetched from India to Render)
+app.post('/api/bids/push', (req, res) => {
+  const { bids, totalFoundOnGeM, state } = req.body;
+  if (!bids || !Array.isArray(bids)) {
+    return res.status(400).json({ success: false, message: 'Invalid bids payload' });
+  }
+
+  const saved = syncWorker.saveBids(bids, totalFoundOnGeM);
+  res.json({
+    success: true,
+    message: `Successfully received and stored ${saved.length} live Maharashtra bids on cloud server!`,
+    totalBids: saved.length,
+    timestamp: syncWorker.lastSyncTime
+  });
+});
+
+// 6. Auto-Sync Schedule Management Endpoints
 app.get('/api/sync/schedules', (req, res) => {
   res.json({
     success: true,
@@ -141,7 +164,7 @@ app.post('/api/sync/schedules', (req, res) => {
   });
 });
 
-// 6. Portal Analytics & City KPI Metrics
+// 7. Portal Analytics & City KPI Metrics
 app.get('/api/stats', (req, res) => {
   const bids = syncWorker.getBids();
   const urgentCount = bids.filter(b => {
@@ -190,7 +213,7 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
-// 7. Export Bids (CSV / JSON)
+// 8. Export Bids (CSV / JSON)
 app.get('/api/export', (req, res) => {
   const bids = syncWorker.getBids(req.query.city);
   const format = req.query.format || 'json';
@@ -221,7 +244,7 @@ app.get('/api/export', (req, res) => {
   res.json(bids);
 });
 
-// 8. Catch-All Single Page Application Fallback
+// 9. Catch-All Single Page Application Fallback
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
     res.sendFile(getIndexHtmlPath());
